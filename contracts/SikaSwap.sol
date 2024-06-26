@@ -11,7 +11,7 @@ interface IFactory {
     ) external returns (address pair);
 }
 
-contract TikSwap is Ownable, ERC20 {
+contract TikaSwap is Ownable, ERC20 {
     struct AccountInfo {
         bool isLPPool;
         bool isLiquidityHolder;
