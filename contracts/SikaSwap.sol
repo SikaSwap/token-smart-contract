@@ -11,7 +11,7 @@ interface IFactory {
     ) external returns (address pair);
 }
 
-contract SikaSwap is Ownable, ERC20 {
+contract TikSwap is Ownable, ERC20 {
     struct AccountInfo {
         bool isLPPool;
         bool isLiquidityHolder;
@@ -73,7 +73,7 @@ contract SikaSwap is Ownable, ERC20 {
     event BuyFeePaid(address indexed from, address indexed to, uint256 amount);
     event SellFeePaid(address indexed from, address indexed to, uint256 amount);
 
-    constructor(address _taxAddress) ERC20("SikaSwap", "$Sika") Ownable(msg.sender) {
+    constructor(address _taxAddress) ERC20("TikSwap", "$Tika") Ownable(msg.sender) {
         uniswapV2Pair = UNISWAP_FACTORY.createPair(address(this), WETH);
 
         setLiquidityHolder(msg.sender, true);
