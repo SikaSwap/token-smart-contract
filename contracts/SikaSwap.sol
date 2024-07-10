@@ -33,12 +33,6 @@ contract SikaSwap is Ownable, ERC20 {
     address UNISWAP_V2_ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D; // uniswapRouter
     address WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2; // wrapped ETH
 
-    // Sepolia
-    // IFactory constant UNISWAP_FACTORY =
-    //     IFactory(0xB7f907f7A9eBC822a80BD25E224be42Ce0A698A0); // UNISWAP_FACTORY
-    // address constant UNISWAP_V2_ROUTER = 0x425141165d3DE9FEC831896C016617a52363b687; // uniswapRouter
-    // address constant WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9; // wrapped ETH
-
     address immutable public uniswapV2Pair; // liquidity pool address
 
     uint256 public buyFeeNumerator;
@@ -69,7 +63,7 @@ contract SikaSwap is Ownable, ERC20 {
     event BuyFeePaid(address indexed from, address indexed to, uint256 amount);
     event SellFeePaid(address indexed from, address indexed to, uint256 amount);
 
-    constructor(address _taxAddress) ERC20("SikaSwap", "$Sika") Ownable(msg.sender) {
+    constructor(address _taxAddress) ERC20("Stwp", "$STAP") Ownable(msg.sender) {
         uniswapV2Pair = UNISWAP_FACTORY.createPair(address(this), WETH);
 
         setLiquidityHolder(msg.sender, true);
