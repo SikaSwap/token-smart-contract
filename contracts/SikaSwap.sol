@@ -18,7 +18,7 @@ contract SikaSwap is Ownable, ERC20 {
         bool isBlackListed;
     }
     mapping(address => AccountInfo) public accountInfo;
-    uint256 private constant TOTAL_SUPPLY = 14 * (1e7) * (1e18);
+    uint256 private constant TOTAL_SUPPLY = 127 * (1e6) * (1e18);
     uint256 public constant DENOMINATOR = 10000; // 100%
     uint256 public constant MAX_BUY_FEE_NUMERATOR = 400; // 4%
     uint256 public constant MAX_SELL_FEE_NUMERATOR = 400; // 4%
@@ -28,16 +28,16 @@ contract SikaSwap is Ownable, ERC20 {
     uint256 public maxBuyAmount = 4 * (1e6) * (1e18);
 
     // mainnet
-    // IFactory UNISWAP_FACTORY =
-    //     IFactory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f); // UNISWAP_FACTORY
-    // address UNISWAP_V2_ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D; // uniswapRouter
-    // address WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2; // wrapped ETH
+    IFactory UNISWAP_FACTORY =
+        IFactory(0x5C69bEe701ef814a2B6a3EDD4B1652CB9cc5aA6f); // UNISWAP_FACTORY
+    address UNISWAP_V2_ROUTER = 0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D; // uniswapRouter
+    address WETH = 0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2; // wrapped ETH
 
     // Sepolia
-    IFactory constant UNISWAP_FACTORY =
-        IFactory(0xB7f907f7A9eBC822a80BD25E224be42Ce0A698A0); // UNISWAP_FACTORY
-    address constant UNISWAP_V2_ROUTER = 0x425141165d3DE9FEC831896C016617a52363b687; // uniswapRouter
-    address constant WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9; // wrapped ETH
+    // IFactory constant UNISWAP_FACTORY =
+    //     IFactory(0xB7f907f7A9eBC822a80BD25E224be42Ce0A698A0); // UNISWAP_FACTORY
+    // address constant UNISWAP_V2_ROUTER = 0x425141165d3DE9FEC831896C016617a52363b687; // uniswapRouter
+    // address constant WETH = 0x7b79995e5f793A07Bc00c21412e50Ecae098E7f9; // wrapped ETH
 
     address immutable public uniswapV2Pair; // liquidity pool address
 
@@ -45,7 +45,6 @@ contract SikaSwap is Ownable, ERC20 {
     uint256 public sellFeeNumerator;
     address public taxAddress;
     bool public feesAreLockedForever;
-    bool public sniperBotProtectionDisabledForever;
     bool public blacklistAddRestrictedForever;
 
     bool public tradingEnabled = false;
@@ -58,9 +57,6 @@ contract SikaSwap is Ownable, ERC20 {
 
     /// @notice Emitted (once) when fees are locked forever.
     event FeesLockedForever();
-
-    /// @notice Emitted (once) when sniper bot protection is disabled forever.
-    event SniperBotProtectionDisabledForever();
 
     event BlacklistSet(address indexed account, bool flag);
 
@@ -140,24 +136,18 @@ contract SikaSwap is Ownable, ERC20 {
         maxBuyAmount = amount;
     }
 
-    function setBuyFeeNumerator(uint256 value) public onlyOwner {
+    function setBuyFeeNumerator(uint256 value) internal {
         require(!feesAreLockedForever, "Fees are locked forever");
         require(value <= MAX_BUY_FEE_NUMERATOR, "Exceeds maximum buy fee");
         buyFeeNumerator = value;
         emit BuyFeeNumeratorSet(value);
     }
 
-    function setSellFeeNumerator(uint256 value) public onlyOwner {
+    function setSellFeeNumerator(uint256 value) internal {
         require(!feesAreLockedForever, "Fees are locked forever");
         require(value <= MAX_SELL_FEE_NUMERATOR, "Exceeds maximum sell fee");
         sellFeeNumerator = value;
         emit SellFeeNumeratorSet(value);
-    }
-
-    function disableSniperBotProtectionForever() external onlyOwner {
-        require(!sniperBotProtectionDisabledForever, "already set");
-        sniperBotProtectionDisabledForever = true;
-        emit SniperBotProtectionDisabledForever();
     }
 
     function _hasLimits(
@@ -165,18 +155,6 @@ contract SikaSwap is Ownable, ERC20 {
         AccountInfo memory toInfo
     ) internal pure returns (bool) {
         return (!fromInfo.isLiquidityHolder || !toInfo.isLiquidityHolder);
-    }
-
-    /* Viewable functions */
-    function buyFee() external view returns (uint256) {
-        return buyFeeNumerator;
-    }
-
-    function getSellFeeNumerator() public view returns (uint256) {
-        if (sniperBotProtectionDisabledForever) {
-            return sellFeeNumerator;
-        }
-        return DENOMINATOR; // 100% to prevent sniper bots from buying
     }
 
     function _update(
@@ -211,7 +189,7 @@ contract SikaSwap is Ownable, ERC20 {
             emit BuyFeePaid(from, taxAddress, taxFee);
         } else if (toInfo.isLPPool) {
             require(tradingEnabled, "Trading is not enabled!");
-            taxFee = (amount * getSellFeeNumerator()) / DENOMINATOR;
+            taxFee = (amount * sellFeeNumerator) / DENOMINATOR;
             require(
                 amount - taxFee <= MAX_SELL_AMOUNT,
                 "Transfer amount exceeds the max sell amount"
