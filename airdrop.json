@@ -1,0 +1,47 @@
+[
+  {
+    "Name": "Peter",
+    "EthereumAddress": "0x0d9509f66d8369A0Ede238D9677FAefC35Af6fE5",
+    "TokensToAirdrop": "4500000.0000000000"
+  },
+  {
+    "Name": "Psych",
+    "EthereumAddress": "0x0B0401608367C07F852ef2a508013018aaF01276",
+    "TokensToAirdrop": "4500000.0000000000"
+  },
+  {
+    "Name": "QD",
+    "EthereumAddress": "0xA88369334003fd8392a3b77568Eb3f88396313a9",
+    "TokensToAirdrop": "4500000.0000000000"
+  },
+  {
+    "Name": "Mat",
+    "EthereumAddress": "0xCaA0C181C4CA5eFf8F67CAB9c84Af6D0f93fb52A",
+    "TokensToAirdrop": "1000000.0000000000"
+  },
+  {
+    "Name": "Marketing",
+    "EthereumAddress": "0x09E5Ef470f9B6806D96dF65b6747FeF0122BB3aB",
+    "TokensToAirdrop": "5500000.0000000000"
+  },
+  {
+    "Name": "Sniper",
+    "EthereumAddress": "0x0E7A990dba7806867A799695b5F2bEeD7cBA9d93",
+    "TokensToAirdrop": "2650000.0000000000"
+  },
+  {
+    "Name": "Travis",
+    "EthereumAddress": "0x84F9DF4FC142637299de1Dc6932721B9360b8d0D",
+    "TokensToAirdrop": "100000.0000000000"
+  },
+  {
+    "Name": "Adrian",
+    "EthereumAddress": "0x6DE3Dd401A938B16F9550C5a74F1DE4dDC5F06Ce",
+    "TokensToAirdrop": "250000.0000000000"
+  },
+  {
+    "Name": "CEX",
+    "EthereumAddress": "0xEB48EdcCf3F2a0a20336fAd5Dc59BCd7a56913b8",
+    "TokensToAirdrop": "4000000.0000000000"
+  }
+]
