@@ -2,7 +2,7 @@ const hre = require("hardhat");
 const fs = require("fs").promises;
 
 async function main() {
-  const taxAddress = "0xC4A522D25D1918387aab969aAF55cF9F707E6b82" // Replace your tax wallet
+  const taxAddress = "0x6Ac5D734488c2cC4992d317CcA3f39b77fd99969" // Replace your tax wallet
   const SikaSwap = await hre.ethers.getContractFactory("SikaSwap");
   const _sikaSwap = await SikaSwap.deploy(taxAddress);
   await _sikaSwap.waitForDeployment();
