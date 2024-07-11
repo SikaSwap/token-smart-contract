@@ -41,10 +41,7 @@ contract SikaSwap is Ownable, ERC20 {
 
     address immutable public uniswapV2Pair; // liquidity pool address
 
-    uint256 public buyFeeNumerator;
-    uint256 public sellFeeNumerator;
     address public taxAddress;
-    bool public feesAreLockedForever;
     bool public blacklistAddRestrictedForever;
 
     bool public tradingEnabled = false;
@@ -55,16 +52,11 @@ contract SikaSwap is Ownable, ERC20 {
     /// @notice Emitted when an account is marked or unmarked as a liquidity holder (treasury, staking, etc).
     event LiquidityHolderSet(address indexed account, bool flag);
 
-    /// @notice Emitted (once) when fees are locked forever.
-    event FeesLockedForever();
-
     event BlacklistSet(address indexed account, bool flag);
 
     /// @notice Emitted (once) when blacklist add is restricted forever.
     event BlacklistAddRestrictedForever();
 
-    event BuyFeeNumeratorSet(uint256 value);
-    event SellFeeNumeratorSet(uint256 value);
     event TaxAddressSet(address _taxAddress);
     event BuyFeePaid(address indexed from, address indexed to, uint256 amount);
     event SellFeePaid(address indexed from, address indexed to, uint256 amount);
@@ -78,8 +70,6 @@ contract SikaSwap is Ownable, ERC20 {
         setLiquidityHolder(uniswapV2Pair, true);
         setLpPair(uniswapV2Pair, true);
         setTaxAddress(_taxAddress);
-        setBuyFeeNumerator(MAX_BUY_FEE_NUMERATOR);
-        setSellFeeNumerator(MAX_SELL_FEE_NUMERATOR);
         _mint(msg.sender, TOTAL_SUPPLY);
     }
 
@@ -99,12 +89,6 @@ contract SikaSwap is Ownable, ERC20 {
         require(newTaxAddress != address(0), "Tax address cannot be zero");
         taxAddress = newTaxAddress;
         emit TaxAddressSet(newTaxAddress);
-    }
-
-    function lockFeesForever() external onlyOwner {
-        require(!feesAreLockedForever, "already set");
-        feesAreLockedForever = true;
-        emit FeesLockedForever();
     }
 
     function restrictBlacklistAddForever() external onlyOwner {
@@ -134,20 +118,6 @@ contract SikaSwap is Ownable, ERC20 {
 
     function setMaxBuyAmount(uint256 amount) external onlyOwner {
         maxBuyAmount = amount;
-    }
-
-    function setBuyFeeNumerator(uint256 value) internal {
-        require(!feesAreLockedForever, "Fees are locked forever");
-        require(value <= MAX_BUY_FEE_NUMERATOR, "Exceeds maximum buy fee");
-        buyFeeNumerator = value;
-        emit BuyFeeNumeratorSet(value);
-    }
-
-    function setSellFeeNumerator(uint256 value) internal {
-        require(!feesAreLockedForever, "Fees are locked forever");
-        require(value <= MAX_SELL_FEE_NUMERATOR, "Exceeds maximum sell fee");
-        sellFeeNumerator = value;
-        emit SellFeeNumeratorSet(value);
     }
 
     function _hasLimits(
@@ -181,7 +151,7 @@ contract SikaSwap is Ownable, ERC20 {
 
         if (fromInfo.isLPPool) {
             require(tradingEnabled, "Trading is not enabled!");
-            taxFee = (amount * buyFeeNumerator) / DENOMINATOR;
+            taxFee = (amount * MAX_BUY_FEE_NUMERATOR) / DENOMINATOR;
             require(
                 amount - taxFee <= maxBuyAmount,
                 "Transfer amount exceeds the max buy amount"
@@ -189,7 +159,7 @@ contract SikaSwap is Ownable, ERC20 {
             emit BuyFeePaid(from, taxAddress, taxFee);
         } else if (toInfo.isLPPool) {
             require(tradingEnabled, "Trading is not enabled!");
-            taxFee = (amount * sellFeeNumerator) / DENOMINATOR;
+            taxFee = (amount * MAX_SELL_FEE_NUMERATOR) / DENOMINATOR;
             require(
                 amount - taxFee <= MAX_SELL_AMOUNT,
                 "Transfer amount exceeds the max sell amount"
